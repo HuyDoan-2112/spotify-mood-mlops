@@ -1,6 +1,44 @@
+# Environments
 .env
+.venv/
+venv/
+env/
+.python-version
+
+# Python cache and artifacts
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+
+# Packaging
+*.egg-info/
+*.egg
+dist/
+build/
+*.manifest
+*.spec
+pip-wheel-metadata/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Logs and coverage
+logs/
+*.log
+.coverage
+.coverage.*
+coverage.xml
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
 
 # Data and model artifacts
 data/raw/*
