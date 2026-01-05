@@ -1,0 +1,2 @@
+model,val_macro_f1,test_macro_f1
+mlp,0.8996427853646122,0.897697752261322

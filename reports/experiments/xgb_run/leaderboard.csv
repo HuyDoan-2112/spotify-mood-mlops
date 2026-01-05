@@ -1,0 +1,2 @@
+model,val_macro_f1,test_macro_f1
+xgb,0.9690193698554578,0.9675377509458403

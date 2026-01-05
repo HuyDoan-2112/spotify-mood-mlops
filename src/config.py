@@ -1,24 +1,34 @@
-"""
-Centralized configuration for paths and common hyperparameters.
-Adjust values to match your local environment and experiment needs.
-"""
 from pathlib import Path
-from dataclasses import dataclass
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_RAW = PROJECT_ROOT / "data" / "raw"
-DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
-MODELS_DIR = PROJECT_ROOT / "models"
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "278k_song_labelled.csv"
+ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
+REPORTS_DIR = PROJECT_ROOT / "reports"
+RUNS_DIR = REPORTS_DIR / "experiments"
+
+DATASET_NAME = "Moodify_278k"
+VN_POOL_RAW = PROJECT_ROOT / "data" / "raw" / "vn_spotify.csv"
+VN_POOL_PROCESSED = PROJECT_ROOT / "data" / "processed" / "vn_pool.parquet"
+
+TARGET_COL = "labels"
+FEATURE_COLS = [
+    "duration (ms)", "danceability", "energy", "loudness", "speechiness",
+    "acousticness", "instrumentalness", "liveness", "valence", "tempo", "spec_rate"
+]
+ENGINEERED_FEATURES = ["intensity", "rhythm_drive", "calm_score"]
+
+VAL_SIZE = 0.1
+TEST_SIZE = 0.1
+TRAIN_SIZE = 0.8
+RANDOM_STATE = 42
 
 
-@dataclass
-class TrainingConfig:
-    target: str
-    test_size: float = 0.2
-    random_state: int = 42
+USE_FEATURE_ENGINEERING = True
+EPOCHS = 25
+BATCH_SIZE = 1024
+VAL_BATCH_SIZE = 4096
+LR = 1e-3
+WEIGHT_DECAY = 1e-4
 
-
-DEFAULT_BINARY_CONFIG = TrainingConfig(target="target_binary")
-DEFAULT_MULTICLASS_CONFIG = TrainingConfig(target="target_multiclass")
-DEFAULT_REGRESSION_CONFIG = TrainingConfig(target="target_regression")
+MODEL_NAMES = ["lr", "rf", "xgb", "lgbm", "mlp"]
+PREFERRED_MODEL = "lgbm"

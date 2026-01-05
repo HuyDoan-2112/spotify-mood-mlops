@@ -1,0 +1,2 @@
+model,val_macro_f1,test_macro_f1
+lgbm,0.9731715458457717,0.971660012550977

@@ -8,3 +8,6 @@ pydantic
 streamlit
 matplotlib
 seaborn
+xgboost
+lightgbm
+torch
