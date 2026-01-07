@@ -13,15 +13,14 @@ VN_POOL_PROCESSED = PROJECT_ROOT / "data" / "processed" / "vn_pool.parquet"
 TARGET_COL = "labels"
 FEATURE_COLS = [
     "duration (ms)", "danceability", "energy", "loudness", "speechiness",
-    "acousticness", "instrumentalness", "liveness", "valence", "tempo", "spec_rate"
+    "acousticness", "instrumentalness", "liveness", "valence", "tempo"
 ]
 ENGINEERED_FEATURES = ["intensity", "rhythm_drive", "calm_score"]
 
+TRAIN_SIZE = 0.8
 VAL_SIZE = 0.1
 TEST_SIZE = 0.1
-TRAIN_SIZE = 0.8
 RANDOM_STATE = 42
-
 
 USE_FEATURE_ENGINEERING = True
 EPOCHS = 25

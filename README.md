@@ -1,25 +1,69 @@
-# ML Project NTI
+# Spotify Mood MLOps
 
-Lightweight scaffold for a multi-problem ML workflow (binary, multiclass, regression) with training, evaluation, reporting, and simple API/UI endpoints.
+Train and compare multiple mood classifiers on the Moodify dataset, save artifacts and reports, and prepare outputs for downstream recommendation and UI layers.
 
-## Layout
-- `data/` — raw and processed data placeholders (gitignored).
-- `notebooks/EDA.ipynb` — exploratory analysis starter notebook.
-- `src/` — core Python modules (config, validation, preprocessing, features, training scripts, evaluation, recommendation).
-- `models/` — serialized artifacts (gitignored).
-- `api/main.py` — FastAPI service stub.
-- `app/streamlit_app.py` — Streamlit interface stub.
-- `reports/report_outline.md` — reporting scaffold.
-- `requirements.txt` — Python dependencies.
+## Project layout
+
+```
+artifacts/          # Model binaries and training outputs (ignored by git)
+data/               # Raw and processed datasets
+notebooks/          # Exploratory analysis
+reports/            # Reports and experiment outputs (experiments ignored by git)
+src/
+  api/              # API entry points (optional)
+  components/       # Reusable blocks (data loader, features, models)
+  engine/           # Training, evaluation, prediction pipeline
+  utils/            # IO helpers
+  config.py         # Central configuration
+```
+
+## Requirements
+
+- Python 3.12.5
+- See `requirements.txt`
 
 ## Quickstart
-1. Create and activate a virtual environment.
-2. Install dependencies: `pip install -r requirements.txt`
-3. Place data into `data/raw/`; transform via your preprocessing pipeline into `data/processed/`.
-4. Run a training script, e.g. `python src/train_binary.py`.
-5. Serve the API: `uvicorn api.main:app --reload`
-6. Launch the UI: `streamlit run app/streamlit_app.py`
+
+1) Create and activate a virtual environment.
+2) Install deps:
+
+```
+pip install -r requirements.txt
+```
+
+3) Put the Moodify CSV in `data/raw/278k_song_labelled.csv` (update `RAW_DATA_PATH` in `src/config.py` if needed).
+
+4) Train all models (LR/RF/XGB/LGBM/MLP):
+
+```
+python -m src.engine.train --model all --run-id all_models
+```
+
+## Outputs
+
+Training writes to:
+
+- `artifacts/<run_id>/<model>/` (model artifacts)
+- `reports/experiments/<run_id>/metrics/` (metrics JSON)
+- `reports/experiments/<run_id>/reports/` (classification reports)
+- `reports/experiments/<run_id>/confusion/` (confusion matrices)
+- `reports/experiments/<run_id>/leaderboard.csv`
+
+## Configuration
+
+All configuration lives in `src/config.py`:
+
+- feature list and target column
+- train/val/test split sizes
+- random seed
+- artifact and report paths
+- preferred model (default: LGBM)
 
 ## Notes
-- Update `src/config.py` with your paths and experiment settings.
-- Keep artifacts out of version control (already covered in `.gitignore`).
+
+- Feature order must be consistent between training and inference.
+- If you change the feature list, retrain all models.
+
+## License
+
+Add your license here.
