@@ -52,3 +52,6 @@ reports/experiments/
 
 models/*
 !models/.gitkeep
+*.parquet
+
+EDA_countries_songs.ipynb

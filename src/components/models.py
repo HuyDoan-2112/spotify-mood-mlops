@@ -37,7 +37,7 @@ def build_model_specs(feature_cols, classes, sample_weight):
     rf = Pipeline([
         ("feat_eng", feat_eng),
         ("model", RandomForestClassifier(
-            n_estimators=400, max_depth=None, min_samples_split=2,
+            n_estimators=600, max_depth=None, min_samples_split=2,
             min_samples_leaf=1, n_jobs=-1, random_state=42,
             class_weight="balanced_subsample"
         ))
@@ -58,6 +58,7 @@ def build_mlp(input_dim: int, num_classes: int):
         nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.15),
         nn.Linear(32, num_classes),
     )
+
 def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
     try: 
         from xgboost import XGBClassifier
@@ -65,7 +66,7 @@ def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
             "xgb",  Pipeline([
                 ("feat_eng", feat_eng),
                 ("model", XGBClassifier(
-                    n_estimators=800,
+                    n_estimators=600,
                     learning_rate=0.05,
                     max_depth=6,
                     subsample=0.9,
@@ -91,7 +92,7 @@ def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
             Pipeline([
                 ("feat_eng", feat_eng),
                 ("model", LGBMClassifier(
-                    n_estimators=1500,
+                    n_estimators=600,
                     learning_rate=0.03,
                     num_leaves=63,
                     subsample=0.9,
