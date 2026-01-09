@@ -1,69 +1,63 @@
-# Spotify Mood MLOps
+# Spotify Mood Recommender
 
-Train and compare multiple mood classifiers on the Moodify dataset, save artifacts and reports, and prepare outputs for downstream recommendation and UI layers.
+- LinkedIn: <your-linkedin>
+- Medium: <your-medium>
 
-## Project layout
+## About The Project
 
-```
-artifacts/          # Model binaries and training outputs (ignored by git)
-data/               # Raw and processed datasets
-notebooks/          # Exploratory analysis
-reports/            # Reports and experiment outputs (experiments ignored by git)
-src/
-  api/              # API entry points (optional)
-  components/       # Reusable blocks (data loader, features, models)
-  engine/           # Training, evaluation, prediction pipeline
-  utils/            # IO helpers
-  config.py         # Central configuration
-```
+Welcome to the Spotify Mood & Trend-Based Recommendation App! 🎵
 
-## Requirements
+This project is a music recommendation system that infers song mood from audio features and recommends tracks based on emotional relevance, popularity, and long-term trends. It uses a trained scikit-learn pipeline for mood inference and time-series chart data to surface trending songs.
 
-- Python 3.12.5
-- See `requirements.txt`
+## Built With
 
-## Quickstart
+- pandas, numpy
+- scikit-learn, lightgbm
+- streamlit
+
+## Getting Started
+
+### Installation Steps
 
 1) Create and activate a virtual environment.
-2) Install deps:
+2) Install dependencies:
 
 ```
 pip install -r requirements.txt
 ```
 
-3) Put the Moodify CSV in `data/raw/278k_song_labelled.csv` (update `RAW_DATA_PATH` in `src/config.py` if needed).
+3) Ensure artifacts and data are available:
 
-4) Train all models (LR/RF/XGB/LGBM/MLP):
+- Models: `artifacts/models/<model>/`
+- Dataset B: `data/processed/filtered_countries.csv`
+
+### Run The UI (no FastAPI)
 
 ```
-python -m src.engine.train --model all --run-id all_models
+python -m streamlit run app/app.py
 ```
 
-## Outputs
+Optional env vars:
+- `MODEL_ROOT` (default: `artifacts/models`)
+- `DATA_B_PATH` (default: `data/processed/filtered_countries.csv`)
+- `DF_LATEST_CACHE_DIR` (default: `data/processed`)
 
-Training writes to:
+First run may be slow because it builds cached `df_latest_<model>.csv`.
 
-- `artifacts/<run_id>/<model>/` (model artifacts)
-- `reports/experiments/<run_id>/metrics/` (metrics JSON)
-- `reports/experiments/<run_id>/reports/` (classification reports)
-- `reports/experiments/<run_id>/confusion/` (confusion matrices)
-- `reports/experiments/<run_id>/leaderboard.csv`
+## Training (optional)
 
-## Configuration
+```
+python -m src.engine.train --model all --run-id mood_5models
+```
 
-All configuration lives in `src/config.py`:
+## Contributing
 
-- feature list and target column
-- train/val/test split sizes
-- random seed
-- artifact and report paths
-- preferred model (default: LGBM)
-
-## Notes
-
-- Feature order must be consistent between training and inference.
-- If you change the feature list, retrain all models.
+Contributions are welcome. Open an issue or submit a PR.
 
 ## License
 
 Add your license here.
+
+## Contact
+
+<your-email>
