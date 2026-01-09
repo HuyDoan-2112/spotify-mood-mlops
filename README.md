@@ -1,7 +1,6 @@
 # Spotify Mood Recommender
 
-- LinkedIn: <your-linkedin>
-- Medium: <your-medium>
+- LinkedIn: Huy Doan
 
 ## About The Project
 
