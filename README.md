@@ -43,6 +43,10 @@ Optional env vars:
 
 First run may be slow because it builds cached `df_latest_<model>.csv`.
 
+### Usage (API & Web App)
+
+Hiện repo chưa có API HTTP sẵn (không có FastAPI/Flask server). Web App chạy bằng Streamlit: chọn `Model`, thử dự đoán mood ở phần **Model playground** (nhập các audio features), và dùng phần **Recommend** để lấy Top K gợi ý theo `mood_idx`, `country`, `mode`, `min_conf`, v.v. Nếu bạn muốn tích hợp API, có thể bọc các hàm nội bộ như `predict_proba_df` (trong `src.models.registry`) và `recommend_df` (trong `src.recommender.recommend`) thành endpoint REST theo nhu cầu.
+
 ## Training (optional)
 
 ```
