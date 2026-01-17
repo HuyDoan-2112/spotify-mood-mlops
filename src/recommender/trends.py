@@ -13,8 +13,10 @@ def compute_trend_score(df: pd.DataFrame, window: int = 30, min_pts: int = 7) ->
     d["snapshot_date"] = pd.to_datetime(d["snapshot_date"], errors="coerce")
     # Multi-day => rolling slope; single-day => movement-based fallback.
     if d["snapshot_date"].nunique() <= 1:
-        daily = pd.to_numeric(d.get("daily_movement", 0), errors="coerce").fillna(0)
-        weekly = pd.to_numeric(d.get("weekly_movement", 0), errors="coerce").fillna(0)
+        daily_col = d["daily_movement"] if "daily_movement" in d.columns else pd.Series(0, index=d.index)
+        weekly_col = d["weekly_movement"] if "weekly_movement" in d.columns else pd.Series(0, index=d.index)
+        daily = pd.to_numeric(daily_col, errors="coerce").fillna(0)
+        weekly = pd.to_numeric(weekly_col, errors="coerce").fillna(0)
         d["trend_raw"] = 0.7 * daily + 0.3 * weekly
         d["trend_score"] = d.groupby("country")["trend_raw"].transform(_minmax_norm).fillna(0.5)
         d["rank_roll_mean"] = np.nan

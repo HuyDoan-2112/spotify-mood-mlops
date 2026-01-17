@@ -8,3 +8,4 @@ seaborn>=0.13,<1
 xgboost>=2.0,<3
 lightgbm>=4.3,<5
 torch>=2.2,<3
+pytest>=8.0,<9

@@ -16,6 +16,18 @@ from src.engine.evaluate import (
     confusion_matrix_array,
 )
 
+
+def _set_seed(seed: int) -> None:
+    """Set random seeds for reproducibility across numpy, torch, and CUDA."""
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+
 class MLPTrainer:
     def __init__(self, cfg, model_name):
         self.cfg = cfg
@@ -62,6 +74,9 @@ class MLPTrainer:
         return y_true, y_pred
     
     def fit(self, X_train, y_train, X_val, y_val, X_test, y_test):
+        # Set seeds for reproducibility
+        _set_seed(self.cfg.RANDOM_STATE)
+
         if self.cfg.USE_FEATURE_ENGINEERING:
             X_train = add_features(X_train, self.cfg.FEATURE_COLS)
             X_val = add_features(X_val, self.cfg.FEATURE_COLS)

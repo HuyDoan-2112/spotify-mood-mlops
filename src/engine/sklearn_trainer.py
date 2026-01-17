@@ -16,7 +16,12 @@ class SklearnTrainer:
         self.model = None
 
     def fit(self, X_train, y_train, X_val, y_val, X_test, y_test):
-        specs = build_model_specs(self.cfg.FEATURE_COLS, self.classes, self.sample_weight)
+        specs = build_model_specs(
+            self.cfg.FEATURE_COLS,
+            self.classes,
+            self.sample_weight,
+            use_feature_engineering=self.cfg.USE_FEATURE_ENGINEERING
+        )
         spec = specs[self.model_name]
         self.model = spec.pipeline
         fit_kwargs = spec.fit_kwargs or {}

@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from typing import Any, Dict
 from sklearn.pipeline import Pipeline
@@ -8,6 +9,8 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 from src.components.features import add_features
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class ModelSpec:
@@ -23,19 +26,23 @@ def build_feature_transformer(feature_cols):
         kw_args={"feature_cols": feature_cols}
     )
 
-def build_model_specs(feature_cols, classes, sample_weight):
-    feat_eng = build_feature_transformer(feature_cols)
+def build_model_specs(feature_cols, classes, sample_weight, use_feature_engineering=False):
+    # Build pipeline steps based on whether feature engineering is enabled
+    if use_feature_engineering:
+        feat_eng = build_feature_transformer(feature_cols)
+        lr_steps = [("feat_eng", feat_eng), ("scaler", StandardScaler())]
+        rf_steps = [("feat_eng", feat_eng)]
+    else:
+        lr_steps = [("scaler", StandardScaler())]
+        rf_steps = []
 
-    lr = Pipeline([
-        ("feat_eng", feat_eng),
-        ("scaler", StandardScaler()),
+    lr = Pipeline(lr_steps + [
         ("model", OneVsRestClassifier(LogisticRegression(
             solver="liblinear", class_weight="balanced", max_iter=2000
         )))
     ])
 
-    rf = Pipeline([
-        ("feat_eng", feat_eng),
+    rf = Pipeline(rf_steps + [
         ("model", RandomForestClassifier(
             n_estimators=600, max_depth=None, min_samples_split=2,
             min_samples_leaf=1, n_jobs=-1, random_state=42,
@@ -47,7 +54,7 @@ def build_model_specs(feature_cols, classes, sample_weight):
         "lr": ModelSpec("lr", lr, {}),
         "rf": ModelSpec("rf", rf, {"model__sample_weight": sample_weight}),
     }
-    specs = try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight)
+    specs = try_add_xgb_lgbm(specs, classes, sample_weight, use_feature_engineering)
     return specs
 
 def build_mlp(input_dim: int, num_classes: int):
@@ -59,12 +66,21 @@ def build_mlp(input_dim: int, num_classes: int):
         nn.Linear(32, num_classes),
     )
 
-def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
-    try: 
+def try_add_xgb_lgbm(specs, classes, sample_weight, use_feature_engineering=False):
+    from src.config import FEATURE_COLS
+
+    if use_feature_engineering:
+        feat_eng = build_feature_transformer(FEATURE_COLS)
+        xgb_steps = [("feat_eng", feat_eng)]
+        lgbm_steps = [("feat_eng", feat_eng)]
+    else:
+        xgb_steps = []
+        lgbm_steps = []
+
+    try:
         from xgboost import XGBClassifier
         specs["xgb"] = ModelSpec(
-            "xgb",  Pipeline([
-                ("feat_eng", feat_eng),
+            "xgb",  Pipeline(xgb_steps + [
                 ("model", XGBClassifier(
                     n_estimators=600,
                     learning_rate=0.05,
@@ -82,15 +98,16 @@ def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
             ]),
             {"model__sample_weight": sample_weight},
         )
-    except Exception:
-        pass
+    except ImportError as e:
+        logger.warning("XGBoost not available, skipping xgb model: %s", e)
+    except Exception as e:
+        logger.error("Failed to initialize XGBoost model: %s", e, exc_info=True)
 
     try:
         from lightgbm import LGBMClassifier
         specs["lgbm"] = ModelSpec(
             "lgbm",
-            Pipeline([
-                ("feat_eng", feat_eng),
+            Pipeline(lgbm_steps + [
                 ("model", LGBMClassifier(
                     n_estimators=600,
                     learning_rate=0.03,
@@ -106,9 +123,10 @@ def try_add_xgb_lgbm(specs, feat_eng, classes, sample_weight):
             ]),
             {"model__sample_weight": sample_weight},
         )
-    except Exception:
-        pass
-
+    except ImportError as e:
+        logger.warning("LightGBM not available, skipping lgbm model: %s", e)
+    except Exception as e:
+        logger.error("Failed to initialize LightGBM model: %s", e, exc_info=True)
 
     return specs
 
